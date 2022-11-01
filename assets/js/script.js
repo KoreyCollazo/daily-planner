@@ -1,131 +1,138 @@
 var today = moment();
 $("#currentDay").text(today.format("dddd, MMMM Do"));
-var nineAmInputEl = document.getElementById("nine");
-var saveButton = document.getElementsByClassName("btn btn-info btn-lg")
-var nineTime = document.querySelector("body > main > div > div:nth-child(1) > div.col-2 > p")
+var saveButton = document.getElementsByClassName("col-md-1 saveBtn")
 
+//variable holding events
 var planner = [
 {
     id: "0",
     hour: "09",
     meridiem: "am",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "09"
 },
 {
     id: "1",
     hour: "10",
     meridiem: "am",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "10"
 },
 {
     id: "2",
     hour: "11",
     meridiem: "am",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "11"
 },
 {
     id: "3",
     hour: "12",
     meridiem: "pm",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "12"
 },
 {
     id: "4",
     hour: "01",
     meridiem: "pm",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "13"
 },
 {
     id: "5",
     hour: "02",
     meridiem: "pm",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "14"
 },
 {
     id: "6",
     hour: "03",
     meridiem: "pm",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "15"
 },
 {
     id: "7",
     hour: "04",
     meridiem: "pm",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "16"
 },
 {
     id: "8",
     hour: "05",
     meridiem: "pm",
-    plannedEvent: ""
+    plannedEvent: "",
+    militaryTime: "17"
 },
 ]
 
-planner.forEach(function(thisHour) {
-    // creates timeblocks row
+planner.forEach(function(eventBlock) {
+    // create event row
     var hourRow = $("<form>").attr({
         "class": "row"
     });
     $(".container").append(hourRow);
 
-    // creates time field
+    // create time label
     var hourField = $("<div>")
-        .text(`${thisHour.hour}${thisHour.meridiem}`)
+        .text(`${eventBlock.hour}${eventBlock.meridiem}`)
         .attr({
             "class": "col-md-2 hour"
     });
 
-    // creates schdeduler data
-    var hourPlan = $("<div>")
+    // create event input
+    var eventHour = $("<div>")
         .attr({
             "class": "col-md-9 description p-0"
-        });
-    var planData = $("<textarea>");
-    hourPlan.append(planData);
-    planData.attr("id", thisHour.id);
-    if (thisHour.time < moment().format("HH")) {
-        planData.attr ({
-            "class": "past", 
+    });
+    var eventData = $("<textarea>");
+    eventHour.append(eventData);
+    
+    if (eventBlock.militaryTime < moment().format("HH")) {
+        eventData.attr ({
+            "class": "past eventInput", 
         })
-    } else if (thisHour.time === moment().format("HH")) {
-        planData.attr({
-            "class": "present"
+    } else if (eventBlock.militaryTime === moment().format("HH")) {
+        eventData.attr({
+            "class": "present eventInput"
         })
-    } else if (thisHour.time > moment().format("HH")) {
-        planData.attr({
-            "class": "future"
+    } else if (eventBlock.militaryTime > moment().format("HH")) {
+        eventData.attr({
+            "class": "future eventInput"
         })
     }
+    eventData.attr("id", eventBlock.id);
 
     // create save button
-    var saveButton = $("<i class='far fa-save fa-lg'></i>")
+    var saveButton = $("<i class='far fa-save fa-lg bi bi-save'></i>")
     var savePlan = $("<button>")
         .attr({
             "class": "col-md-1 saveBtn"
     });
     savePlan.append(saveButton);
-    hourRow.append(hourField, hourPlan, savePlan);
+    hourRow.append(hourField, eventHour, savePlan);
 })
 
-
-
-
-
-
-
-
-function renderMessage() {
-    var lastEvent = JSON.parse(localStorage.getItem("planner"));
-    if (lastEvent !== null) {
-      nineAmInputEl.textContent = lastEvent.nineTime
-    }
+//display localstorage data
+function displayEvents() {
+    var savedPlanner = JSON.parse(localStorage.getItem("planner"));
+    planner = savedPlanner
+    planner.forEach(function (EventBlock) {
+        $(`#${EventBlock.id}`).val(EventBlock.plannedEvent);
+    })
 }
-  
 
+displayEvents()
+
+//Save to local data
 function saveToLocal(){
     localStorage.setItem("planner", JSON.stringify(planner));
 }
 
+//displays save message
 function savedMessageAlert() {
     const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
 
@@ -134,22 +141,23 @@ function savedMessageAlert() {
     wrapper.innerHTML = [
         `<div class="alert alert-${type} alert-dismissible" role="alert">`,
         `   <div>${message}</div>`,
-        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
         '</div>'
     ].join('')
     alertPlaceholder.append(wrapper)
-    }
+    
+}
 
     alert('Appointment added to local storage ✓', 'success')
 }
 
-
-
-
-
+//adds event listners
 for (var i = 0 ; i < saveButton.length; i++) {
-    saveButton[i].addEventListener('click', function(){
+    saveButton[i].addEventListener('click', function(event){
+        event.preventDefault();
+        var eventIndex = $(this).siblings(".description").children(".eventInput").attr("id");
+        planner[eventIndex].plannedEvent = $(this).siblings(".description").children(".eventInput").val();
         saveToLocal()
+        displayEvents()
         savedMessageAlert()
     }) ; 
  }
