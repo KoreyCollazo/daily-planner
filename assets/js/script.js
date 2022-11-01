@@ -1,4 +1,4 @@
-//set current date
+//set current time
 var today = moment();
 $("#currentDay").text(today.format("dddd, MMMM Do"));
 var saveButton = document.getElementsByClassName("col-md-1 saveBtn")
@@ -119,14 +119,21 @@ planner.forEach(function(eventBlock) {
 
 //display localstorage data
 function displayEvents() {
-    var savedPlanner = JSON.parse(localStorage.getItem("planner"));
-    planner = savedPlanner
-    planner.forEach(function (EventBlock) {
-        $(`#${EventBlock.id}`).val(EventBlock.plannedEvent);
+    planner.forEach(function (eventBlockA) {
+        $(`#${eventBlockA.id}`).val(eventBlockA.plannedEvent);
     })
 }
 
-displayEvents()
+function loadEvents() {
+    var savedPlanner = JSON.parse(localStorage.getItem("planner"));
+
+    if (savedPlanner) {
+        planner = savedPlanner;
+    }
+
+    saveToLocal();
+    displayEvents();
+}
 
 //Save to local data
 function saveToLocal(){
