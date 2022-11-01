@@ -1,3 +1,4 @@
+//set current date
 var today = moment();
 $("#currentDay").text(today.format("dddd, MMMM Do"));
 var saveButton = document.getElementsByClassName("col-md-1 saveBtn")
@@ -147,7 +148,7 @@ function savedMessageAlert() {
     
 }
 
-    alert('Appointment added to local storage ✓', 'success')
+    alert('Event added to local storage ✓', 'success')
 }
 
 //adds event listners
